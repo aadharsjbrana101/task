@@ -1,0 +1,320 @@
+
+USE dpt;
+
+
+CREATE TABLE Patient (
+    PatientID INT AUTO_INCREMENT PRIMARY KEY,
+    FirstName VARCHAR(50) NOT NULL,
+    LastName VARCHAR(50) NOT NULL,
+    DateOfBirth DATE NOT NULL,
+    Gender CHAR(1),
+    Phone VARCHAR(15),
+    BloodGroup VARCHAR(5),
+
+    CHECK (Gender IN ('M', 'F'))
+);
+
+
+CREATE TABLE Doctor (
+    DoctorID INT AUTO_INCREMENT PRIMARY KEY,
+    FirstName VARCHAR(50) NOT NULL,
+    LastName VARCHAR(50) NOT NULL,
+    Specialty VARCHAR(50) NOT NULL,
+    Phone VARCHAR(15),
+    Email VARCHAR(100) UNIQUE
+);
+
+
+CREATE TABLE Appointment (
+    AppointmentID INT AUTO_INCREMENT PRIMARY KEY,
+    PatientID INT NOT NULL,
+    DoctorID INT NOT NULL,
+    AppointmentDate DATE NOT NULL,
+    Reason VARCHAR(100),
+    Status VARCHAR(20),
+
+    FOREIGN KEY (PatientID) REFERENCES Patient(PatientID),
+    FOREIGN KEY (DoctorID) REFERENCES Doctor(DoctorID),
+
+    CHECK (Status IN ('Scheduled', 'Completed', 'Cancelled'))
+);
+
+
+CREATE TABLE Prescription (
+    PrescriptionID INT AUTO_INCREMENT PRIMARY KEY,
+    PatientID INT NOT NULL,
+    DoctorID INT NOT NULL,
+    Medication VARCHAR(100),
+    Dosage VARCHAR(50),
+    StartDate DATE,
+    EndDate DATE,
+
+    FOREIGN KEY (PatientID) REFERENCES Patient(PatientID),
+    FOREIGN KEY (DoctorID) REFERENCES Doctor(DoctorID)
+);
+
+
+CREATE TABLE Billing (
+    BillingID INT AUTO_INCREMENT PRIMARY KEY,
+    PatientID INT NOT NULL,
+    Amount DECIMAL(10,2) NOT NULL DEFAULT 0,
+    BillingDate DATE,
+    Status VARCHAR(20),
+
+    FOREIGN KEY (PatientID) REFERENCES Patient(PatientID),
+
+    CHECK (Status IN ('Pending', 'Paid'))
+);
+
+CREATE TABLE MedicalRecord (
+    RecordID INT AUTO_INCREMENT PRIMARY KEY,
+    PatientID INT NOT NULL,
+    Diagnosis VARCHAR(100),
+    Treatment VARCHAR(100),
+    RecordDate DATE,
+    Notes VARCHAR(255),
+
+    FOREIGN KEY (PatientID) REFERENCES Patient(PatientID)
+);
+
+
+INSERT INTO Patient
+(FirstName, LastName, DateOfBirth, Gender, Phone, BloodGroup)
+VALUES
+('Ram', 'Sharma', '1990-05-10', 'M', '9811111111', 'A+'),
+('Sita', 'Karki', '1995-07-12', 'F', '9811111112', 'B+'),
+('Hari', 'Thapa', '1988-03-25', 'M', '9811111113', 'O+'),
+('Gita', 'Rai', '1992-11-18', 'F', '9811111114', 'AB+'),
+('Aman', 'Basnet', '1999-01-15', 'M', '9811111115', 'A-'),
+('Nisha', 'Gurung', '1996-06-20', 'F', '9811111116', 'B-'),
+('Rohan', 'KC', '1985-09-30', 'M', '9811111117', 'O-'),
+('Puja', 'Lama', '1998-04-11', 'F', '9811111118', 'A+'),
+('Bibek', 'Adhikari', '1993-08-08', 'M', '9811111119', 'AB-'),
+('Sneha', 'Joshi', '2000-12-05', 'F', '9811111120', 'O+');
+
+INSERT INTO Doctor
+(FirstName, LastName, Specialty, Phone, Email)
+VALUES
+('Raman', 'Khatiwada', 'Cardiology', '9822222201', 'raman1@hospital.com'),
+('Anil', 'Shrestha', 'Neurology', '9822222202', 'anil@hospital.com'),
+('Sunita', 'Pandey', 'Orthopedics', '9822222203', 'sunita@hospital.com'),
+('Bikash', 'Rana', 'Dermatology', '9822222204', 'bikash@hospital.com'),
+('Mina', 'Thapa', 'Pediatrics', '9822222205', 'mina@hospital.com'),
+('Suresh', 'Karki', 'ENT', '9822222206', 'suresh@hospital.com'),
+('Asha', 'Lama', 'Gynecology', '9822222207', 'asha@hospital.com'),
+('Kiran', 'Joshi', 'Psychiatry', '9822222208', 'kiran@hospital.com'),
+('Deepa', 'Rai', 'Oncology', '9822222209', 'deepa@hospital.com'),
+('Ritesh', 'Basnet', 'General Medicine', '9822222210', 'ritesh@hospital.com');
+
+INSERT INTO Appointment
+(PatientID, DoctorID, AppointmentDate, Reason, Status)
+VALUES
+(1,1,'2026-05-01','Heart Checkup','Scheduled'),
+(2,2,'2026-05-02','Migraine','Completed'),
+(3,3,'2026-05-03','Knee Pain','Cancelled'),
+(4,4,'2026-05-04','Skin Allergy','Scheduled'),
+(5,5,'2026-05-05','Fever','Completed'),
+(6,6,'2026-05-06','Ear Infection','Scheduled'),
+(7,7,'2026-05-07','Pregnancy Checkup','Completed'),
+(8,8,'2026-05-08','Depression','Scheduled'),
+(9,9,'2026-05-09','Cancer Consultation','Cancelled'),
+(10,10,'2026-05-10','General Checkup','Scheduled');
+
+
+INSERT INTO Prescription
+(PatientID, DoctorID, Medication, Dosage, StartDate, EndDate)
+VALUES
+(1,1,'Aspirin','1 tablet daily','2026-05-01','2026-05-30'),
+(2,2,'Paracetamol','2 tablets daily','2026-05-02','2026-05-10'),
+(3,3,'Ibuprofen','1 tablet daily','2026-05-03','2026-05-15'),
+(4,4,'Cetirizine','1 tablet nightly','2026-05-04','2026-05-20'),
+(5,5,'Amoxicillin','3 times daily','2026-05-05','2026-05-12'),
+(6,6,'Ear Drops','2 drops daily','2026-05-06','2026-05-18'),
+(7,7,'Iron Tablets','1 tablet daily','2026-05-07','2026-06-07'),
+(8,8,'Fluoxetine','1 capsule daily','2026-05-08','2026-06-08'),
+(9,9,'Chemotherapy Med','Weekly','2026-05-09','2026-07-09'),
+(10,10,'Vitamin D','1 tablet weekly','2026-05-10','2026-06-10');
+
+INSERT INTO Billing
+(PatientID, Amount, BillingDate, Status)
+VALUES
+(1,5000,'2026-05-01','Pending'),
+(2,2500,'2026-05-02','Paid'),
+(3,3000,'2026-05-03','Pending'),
+(4,1500,'2026-05-04','Paid'),
+(5,4500,'2026-05-05','Pending'),
+(6,2000,'2026-05-06','Paid'),
+(7,7000,'2026-05-07','Pending'),
+(8,3500,'2026-05-08','Paid'),
+(9,10000,'2026-05-09','Pending'),
+(10,1800,'2026-05-10','Paid');
+
+INSERT INTO MedicalRecord
+(PatientID, Diagnosis, Treatment, RecordDate, Notes)
+VALUES
+(1,'Hypertension','Medication','2026-05-01','Regular monitoring needed'),
+(2,'Migraine','Painkillers','2026-05-02','Avoid stress'),
+(3,'Arthritis','Physiotherapy','2026-05-03','Weekly sessions'),
+(4,'Skin Allergy','Antihistamine','2026-05-04','Avoid dust'),
+(5,'Flu','Rest and Medicine','2026-05-05','Drink fluids'),
+(6,'Ear Infection','Antibiotics','2026-05-06','Follow-up required'),
+(7,'Pregnancy','Routine Checkup','2026-05-07','Healthy condition'),
+(8,'Depression','Counseling','2026-05-08','Monthly therapy'),
+(9,'Cancer','Chemotherapy','2026-05-09','Critical stage'),
+(10,'Vitamin Deficiency','Supplements','2026-05-10','Balanced diet advised');
+
+SELECT * FROM Patient;
+
+SELECT * FROM Doctor;
+
+#1
+SELECT
+    PatientID,
+    SUM(Amount) AS TotalAmount
+FROM Billing
+GROUP BY PatientID;
+
+#2
+SELECT
+    CONCAT(d.FirstName, ' ', d.LastName) AS DoctorName,
+    COUNT(a.AppointmentID) AS AppointmentCount
+FROM Doctor d
+JOIN Appointment a
+ON d.DoctorID = a.DoctorID
+GROUP BY d.DoctorID, DoctorName;
+
+#3
+SELECT
+    AVG(Amount) AS AverageBillingAmount
+FROM Billing;
+
+#4
+SELECT
+    MAX(Amount) AS MaximumAmount,
+    MIN(Amount) AS MinimumAmount
+FROM Billing;
+
+#5
+SELECT
+    CONCAT(d.FirstName, ' ', d.LastName) AS DoctorName,
+    COUNT(p.PrescriptionID) AS PrescriptionCount
+FROM Doctor d
+JOIN Prescription p
+ON d.DoctorID = p.DoctorID
+GROUP BY d.DoctorID, DoctorName
+HAVING COUNT(p.PrescriptionID) > 2;
+
+#6
+SELECT
+    Diagnosis,
+    COUNT(*) AS RecordCount
+FROM MedicalRecord
+GROUP BY Diagnosis;
+
+#7
+SELECT
+    CONCAT(p.FirstName, ' ', p.LastName) AS PatientName,
+    m.Diagnosis
+FROM Patient p
+JOIN MedicalRecord m
+ON p.PatientID = m.PatientID;
+
+#8
+SELECT
+    a.AppointmentDate,
+    a.Reason,
+    a.Status,
+    p.FirstName AS PatientFirstName,
+    p.LastName AS PatientLastName,
+    d.FirstName AS DoctorFirstName,
+    d.LastName AS DoctorLastName
+FROM Appointment a
+JOIN Patient p
+ON a.PatientID = p.PatientID
+JOIN Doctor d
+ON a.DoctorID = d.DoctorID;
+
+#9
+SELECT
+    pr.Medication,
+    CONCAT(p.FirstName, ' ', p.LastName) AS PatientName,
+    CONCAT(d.FirstName, ' ', d.LastName) AS DoctorName
+FROM Prescription pr
+JOIN Patient p
+ON pr.PatientID = p.PatientID
+JOIN Doctor d
+ON pr.DoctorID = d.DoctorID;
+
+#10
+SELECT
+    CONCAT(p.FirstName, ' ', p.LastName) AS PatientName,
+    b.Amount,
+    b.BillingDate,
+    b.Status
+FROM Patient p
+LEFT JOIN Billing b
+ON p.PatientID = b.PatientID;
+
+#11
+SELECT
+    CONCAT(d.FirstName, ' ', d.LastName) AS DoctorName,
+    a.AppointmentDate,
+    a.Status
+FROM Doctor d
+LEFT JOIN Appointment a
+ON d.DoctorID = a.DoctorID;
+
+#12
+SELECT
+    CONCAT(p.FirstName, ' ', p.LastName) AS PatientName,
+    SUM(b.Amount) AS TotalBilled
+FROM Patient p
+JOIN Billing b
+ON p.PatientID = b.PatientID
+GROUP BY p.PatientID, PatientName;
+
+#13
+SELECT
+    a.AppointmentDate,
+    a.Reason,
+    a.Status,
+    p.Gender,
+    p.Phone
+FROM Appointment a
+JOIN Patient p
+ON a.PatientID = p.PatientID;
+
+#14
+SELECT *
+FROM Appointment
+WHERE Status = 'Scheduled'
+AND AppointmentDate > '2026-01-01';
+
+#15
+SELECT *
+FROM Patient
+WHERE FirstName LIKE 'A%';
+
+#16
+SELECT *
+FROM Billing
+WHERE Amount BETWEEN 500 AND 2000;
+
+#17
+SELECT *
+FROM Prescription
+WHERE Medication IN ('Paracetamol', 'Ibuprofen', 'Amoxicillin');
+
+#18
+SELECT *
+FROM MedicalRecord
+WHERE Treatment LIKE '%Surgery%'
+OR Notes IS NOT NULL;
+
+#19
+ALTER TABLE Patient
+ADD BloodGroup VARCHAR(5);
+
+#20
+ALTER TABLE Doctor
+MODIFY Phone VARCHAR(20);
